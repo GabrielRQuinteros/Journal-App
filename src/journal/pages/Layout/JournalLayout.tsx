@@ -1,10 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import { Outlet } from "react-router";
-import { NavBar } from "../../components/NavBar/NavBar";
-import { SideBar } from "../../components";
+import { SideBar, NavBar } from "../../components";
 
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 export const JournalLayout = () => {
   return (
@@ -13,14 +12,14 @@ export const JournalLayout = () => {
         
           {/* NavBar */}
           <NavBar drawerWidth={drawerWidth}/>
-          {/* SideBar */}
+          {/* SideBar --> En Material UI se lo llama Drawer */}
           <SideBar drawerWidth={drawerWidth} />
           
           <Box component='main'
             sx={{ flexGrow: 1, p: 3 }}
-            
             >
               {/* ToolBar */}
+              <Toolbar/>
               
               {/* Contenido que cambia*/}
               <Outlet/>

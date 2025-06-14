@@ -6,8 +6,8 @@ export const NavBar = ({drawerWidth}: {drawerWidth: number}) => {
     <>
         <AppBar position="fixed"
                 sx={{
-                width: { sm: `calc(100% - ${drawerWidth}px)` },
-                ml: { sm: `${drawerWidth}px` },
+                    width: { sm: `calc(100% - ${drawerWidth}px)` },
+                    ml: { sm: `${drawerWidth}px` },
                 }}
 
             >
