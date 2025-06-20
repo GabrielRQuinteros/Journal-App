@@ -1,5 +1,5 @@
-import { IconButton, Toolbar } from '@mui/material';
-import { NoteView, NothingSelectedView } from '../views';
+import { IconButton } from '@mui/material';
+import { NothingSelectedView } from '../views';
 import { AddOutlined } from '@mui/icons-material';
 export const HomePage = () => {
   return (
