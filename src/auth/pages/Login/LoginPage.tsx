@@ -1,11 +1,12 @@
-import { Google } from "@mui/icons-material";
-import { Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
 import { Link as ReactRouterLink  } from 'react-router'
+
+import { Alert, Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { Google } from "@mui/icons-material";
+
 import { useForm } from "../../../shared/hooks";
 import type { LoginForm } from "./interfaces/LoginInterfaces";
-import { checkingAuthentication, startGoogleSignIn, useAppDispatch } from "../../../store";
-
-
+import { AuthStatus, startGoogleSignIn, startSignInWithEmailAndPassword, useAppDispatch, useAppSelector } from "../../../store";
 
 export const LoginPage = () => {
 
@@ -14,18 +15,24 @@ export const LoginPage = () => {
       email: 'gabriel@gmail.com',
       password: '123456'
   }
-  const { email, password, onInputChange, formState } = useForm( initialForm );
+  const { email, password, onInputChange } = useForm( initialForm );
 
+  const { status, errorMessage } = useAppSelector( state => state.auth);
+  const [isSubmited, setIsSubmited] = useState(false);
+  
+  const isAuthenticating = useMemo( ()=> () => status === AuthStatus.CHECKING && isSubmited, [status, isSubmited] );
+  
   const onSubmit = ( event: React.FormEvent<HTMLFormElement> ) => {
     event.preventDefault();
-    console.log(formState);
-    dispatch( checkingAuthentication( email, password ) );
+    setIsSubmited(true);
+    dispatch( startSignInWithEmailAndPassword( email, password ) );
   }
 
   const onGoogleSignIn = () => {
+    setIsSubmited(true);
     dispatch( startGoogleSignIn() );
   }
-
+  
   return (
         <>
         <Typography
@@ -83,6 +90,7 @@ export const LoginPage = () => {
                 <Button variant="contained"
                         fullWidth
                         type="submit"
+                        disabled={ isAuthenticating() }
                         >
                     Login
                 </Button>
@@ -93,12 +101,18 @@ export const LoginPage = () => {
                 <Button variant="contained"
                         fullWidth
                         onClick={ onGoogleSignIn }
+                        disabled={ isAuthenticating() }
                         >
                     <Google/>
                     <Typography sx={{ ml: 1 }} >
                         Google
                     </Typography>
                 </Button>
+              </Grid>
+              <Grid  size={ 12 }
+                 sx={{ display: isSubmited && errorMessage ? 'block' : 'none' }}
+                >
+                 <Alert severity="error">{errorMessage}</Alert>
               </Grid>
 
           </Grid>
@@ -109,7 +123,7 @@ export const LoginPage = () => {
                   color="inherit"
                   component={ ReactRouterLink }
                   >
-                Register
+                Crear una cuenta
             </Link>
           </Grid>
         

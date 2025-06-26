@@ -1,7 +1,12 @@
 import { TurnedInNot } from "@mui/icons-material";
 import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from "@mui/material";
+import { useAppSelector } from "../../../store";
 
 export const SideBar = ({drawerWidth}: {drawerWidth: number}) => {
+
+  const { name } = useAppSelector( state=> state.auth );
+
+
   return (
     <>
         <Box
@@ -20,7 +25,7 @@ export const SideBar = ({drawerWidth}: {drawerWidth: number}) => {
                 >
                 <Toolbar>
                     <Typography variant="h6" noWrap component='div'>
-                        Gabriel 
+                        {name} 
                     </Typography>
                 </Toolbar>
                 <Divider/>

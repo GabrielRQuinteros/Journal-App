@@ -13,21 +13,26 @@ export interface AuthState {
   email: string | null,
   name: string | null,
   photoURL: string | null,
-  errorMessage: string | null
+  errorMessage: string | null,
+  token: string | null,
 }
 
 export interface LoginPayload {
-  email: string,
-  password: string
+  uid:             string,
+  displayName:     string | null,
+  email:           string | null,
+  photoURL:        string | null,
+  token:           string | null,
 }
 
 const initialState: AuthState = {
-  status: AuthStatus.NOT_AUTHENTICATED,
+  status: AuthStatus.CHECKING,
   email: null,
   uid: null,
   name: null,
   photoURL: null,
-  errorMessage: null
+  errorMessage: null,
+  token: null
 }
 
 export const authSlice = createSlice({
@@ -35,18 +40,32 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         login: (state, action: PayloadAction<LoginPayload> ) => {
+          state.status = AuthStatus.AUTHENTICATED;
+          state.email=  action.payload.email;
+          state.uid=  action.payload.uid;
+          state.name=  action.payload.displayName;
+          state.photoURL=  action.payload.photoURL;
+          state.errorMessage=  null;
+          state.token= action.payload.token;
             
         },
-        logout: (state) => {
-            state.status=  initialState.status;
-            state.email=  initialState.email;
-            state.uid=  initialState.uid;
-            state.name=  initialState.name;
-            state.photoURL=  initialState.photoURL;
-            state.errorMessage=  initialState.errorMessage;
+        logout: (state, action: PayloadAction<string | undefined>) => {
+            state.status= AuthStatus.NOT_AUTHENTICATED;
+            state.email=  null;
+            state.uid=  null;
+            state.name=  null;
+            state.photoURL=  null;
+            state.errorMessage=  action.payload || null;
+            state.token= null;
         },
         checkingCredentials: ( state ) => {
           state.status = AuthStatus.CHECKING;
+          state.email=  null;
+          state.uid=  null;
+          state.name=  null;
+          state.photoURL=  null;
+          state.errorMessage= null;
+          state.token= null;
         }
     }
 });
