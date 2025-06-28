@@ -1,8 +1,26 @@
 import { SaveOutlined } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { ImageGalery } from "../../components/ImageGalery/ImageGalery";
+import { useAppSelector } from "../../../store";
+import { useForm } from "../../../shared/hooks";
+import { useMemo } from "react";
 
 export const NoteView = () => {
+
+    const { activeNote } = useAppSelector( state => state.journal );
+
+    const { title, body, date, imageUrls, onInputChange, formState } = useForm( activeNote! );
+
+    const dateString = useMemo( () => {
+        const noteDate = new Date( date! );
+        return noteDate.toUTCString(); 
+        }
+        , [date] )
+
+    const onSaveNote = () => {
+
+    }
+
   return (
         <>
             <Grid   container 
@@ -15,12 +33,15 @@ export const NoteView = () => {
                 <Typography fontSize={39}
                         fontWeight='light'
                     >
-                    13 de Junio, 2025
+                    { dateString }
                 </Typography>
             </Grid>
             
             <Grid>
-                <Button color="primary" sx={{ padding: 2 }} >
+                <Button color="primary"
+                        sx={{ padding: 2 }}
+                        onClick={ onSaveNote }
+                        >
                     <SaveOutlined sx={{ fontSize: 30 , mr: 1}} />
                     Guardar
                 </Button>
@@ -34,7 +55,10 @@ export const NoteView = () => {
                             label='Titulo'
                             placeholder="Ingrese un titulo"
                             sx={{ border: 'none', mb: 1 }}
-                        
+
+                            value={ title }
+                            name="title"
+                            onChange={ onInputChange }
 
                     />
                 
@@ -45,6 +69,10 @@ export const NoteView = () => {
                             multiline
                             placeholder="¿Qué paso el día hoy?"
                             sx={{ border: 'none', mb: 1 }}
+
+                            value={ body }
+                            name="body"
+                            onChange={ onInputChange }
 
                     />
             </Grid>

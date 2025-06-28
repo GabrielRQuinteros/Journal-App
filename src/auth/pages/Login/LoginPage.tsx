@@ -8,13 +8,16 @@ import { useForm } from "../../../shared/hooks";
 import type { LoginForm } from "./interfaces/LoginInterfaces";
 import { AuthStatus, startGoogleSignIn, startSignInWithEmailAndPassword, useAppDispatch, useAppSelector } from "../../../store";
 
+
+const initialForm: LoginForm = {
+      email: '',
+      password: ''
+  }
+
 export const LoginPage = () => {
 
   const dispatch = useAppDispatch();
-  const initialForm: LoginForm = {
-      email: 'gabriel@gmail.com',
-      password: '123456'
-  }
+  
   const { email, password, onInputChange } = useForm( initialForm );
 
   const { status, errorMessage } = useAppSelector( state => state.auth);
@@ -53,7 +56,7 @@ export const LoginPage = () => {
             id="email"
             label="Email"
             type="email"
-            placeholder="email@google.com"
+            placeholder="Email"
             size="small"
             margin="normal"
             sx={{display: 'block'}}
@@ -69,7 +72,7 @@ export const LoginPage = () => {
             id="password"
             label="Password"
             type="password"
-            placeholder="password"
+            placeholder="Password"
             size="small"
             margin="normal"
             sx={{display: 'block'}}

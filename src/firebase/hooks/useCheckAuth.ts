@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { login, logout, useAppDispatch, useAppSelector, type LoginPayload } from "../../store";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { firebaseAuth } from "../firebaseConfig";
+import { startLoadingNotes } from "../../store/journal";
 
 
 export const useCheckAuth = () => {
@@ -23,7 +24,9 @@ const { status } = useAppSelector( store => store.auth );
   onAuthStateChanged( firebaseAuth, async (user: User | null) => {
      if( !user ) return dispatch( logout() );
      const payload: LoginPayload = { uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL, token: await user.getIdToken() }
-     dispatch( login(payload) )
+     dispatch( login(payload) );
+     dispatch( startLoadingNotes() );
+     
     } );
   }, [dispatch]);
 

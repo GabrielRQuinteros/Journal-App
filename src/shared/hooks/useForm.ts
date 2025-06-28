@@ -33,6 +33,10 @@ export const useForm = <T extends object>(initialFormState: T, formValidations?:
     useEffect(() => createValidators() , [ formState, createValidators ]);
     
 
+    useEffect(() => { setFormState( () => initialFormState ); }, [ initialFormState ] );
+    
+
+
     const onInputChange = ( event: React.ChangeEvent<HTMLInputElement> ) => {
         const {name, value} = event.target;
         setFormState( (oldFormState) => ({ ...oldFormState, [name]: value }) );
