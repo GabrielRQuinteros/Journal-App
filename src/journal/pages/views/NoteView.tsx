@@ -1,13 +1,21 @@
+import { useEffect, useMemo } from "react";
+
 import { SaveOutlined } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography } from "@mui/material";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import Swal from 'sweetalert2';
+
 import { ImageGalery } from "../../components/ImageGalery/ImageGalery";
-import { useAppSelector } from "../../../store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import { useForm } from "../../../shared/hooks";
-import { useMemo } from "react";
+import { setActiveNoteFromNote, startSavingNote, startUploadingFiles, type Note } from "../../../store/journal";
+import { VisuallyHiddenInput } from "../../../shared/components/VisuallyHiddenInput";
+
 
 export const NoteView = () => {
 
-    const { activeNote } = useAppSelector( state => state.journal );
+    const { activeNote, messageSaved, isSaving } = useAppSelector( state => state.journal );
+    const dispatch = useAppDispatch();
 
     const { title, body, date, imageUrls, onInputChange, formState } = useForm( activeNote! );
 
@@ -15,10 +23,28 @@ export const NoteView = () => {
         const noteDate = new Date( date! );
         return noteDate.toUTCString(); 
         }
-        , [date] )
+        , [date] );
 
     const onSaveNote = () => {
+        const updatedNote: Note = {id: activeNote?.id, title, body, date, imageUrls }
+        dispatch( startSavingNote( updatedNote ) );
+    }
 
+    useEffect( () => {
+        const updatedNote: Note = { ...formState };
+        dispatch( setActiveNoteFromNote( updatedNote ) );
+    }, [ title, body , imageUrls ] );
+
+    useEffect(() => {
+        if( messageSaved.length > 0 )
+            Swal.fire( 'Nota actualizada', messageSaved, 'success' );
+    }, [messageSaved]);
+
+    const onFileInputChange = ( event: React.ChangeEvent<HTMLInputElement>) => {
+        const filesList: FileList = event.target.files!;
+        if( filesList.length === 0 ) return;
+        const files: File[] = Array.from(filesList);
+        dispatch( startUploadingFiles( files ) );
     }
 
   return (
@@ -36,11 +62,30 @@ export const NoteView = () => {
                     { dateString }
                 </Typography>
             </Grid>
+
+            
             
             <Grid>
+                <Button
+                    sx={{ margin:2 }}
+                    component="label"
+                    role={undefined}
+                    variant="contained"
+                    startIcon={ <CloudUploadIcon />}
+                    disabled={ isSaving }
+                        >
+                        Subir fotos
+                        <VisuallyHiddenInput
+                            type="file"
+                            onChange={ onFileInputChange }
+                            multiple 
+                        />
+                    </Button>
+
                 <Button color="primary"
                         sx={{ padding: 2 }}
                         onClick={ onSaveNote }
+                        disabled={ isSaving }
                         >
                     <SaveOutlined sx={{ fontSize: 30 , mr: 1}} />
                     Guardar
