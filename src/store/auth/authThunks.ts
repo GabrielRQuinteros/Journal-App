@@ -1,5 +1,6 @@
 import { checkingCredentials, login, logout, type AppDispatch, type LoginPayload } from "..";
 import { logoutFirebase, registerUserWithEmailPassword, signInWithEmailAndPasswordApp, signInWithGoogle, type SingInErrorResponse, type UserProfileInfo } from "../../firebase";
+import { clearNotesOnLogout } from "../journal";
 import { type RootState } from '../store';
 
 export const checkingAuthentication = () => {
@@ -90,6 +91,7 @@ export const startLogout = () => {
     return async ( dispatch: AppDispatch ) => {
         try {
             await logoutFirebase();
+            dispatch( clearNotesOnLogout() );
             dispatch( logout() );
         } catch (error) {
             console.log(error);

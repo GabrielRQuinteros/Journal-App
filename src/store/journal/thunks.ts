@@ -1,8 +1,8 @@
-import { collection, doc } from "firebase/firestore";
+import { collection, deleteDoc, doc } from "firebase/firestore";
 import type { AppDispatch, RootState } from "../store";
 import { firebaseDB } from "../../firebase";
 import { setDoc } from "firebase/firestore";
-import { addNewEmptyNote, setActiveNote, setNotes, setPhotosToActiveNote, setSaving, updateNote, type Note } from './journalSlice';
+import { addNewEmptyNote, deleteNoteById, setActiveNote, setActiveNoteFromNote, setIsDeleting, setNotes, setPhotosToActiveNote, setSaving, updateNote, type Note } from './journalSlice';
 import { fileUpload, loadNotes } from "../../helpers";
 import { logout } from "../auth";
 
@@ -84,3 +84,29 @@ export const startUploadingFiles = ( files: File[] = [] ) => {
         dispatch( setPhotosToActiveNote( filesResponses as string[] ) );
      }
 }
+
+
+export const startDeletingNote = () => {
+    return async ( dispatch: AppDispatch, getState: () => RootState ) => {
+        dispatch( setIsDeleting(true) )
+        const { uid } = getState().auth;
+        const { activeNote } = getState().journal;
+        if( !activeNote )
+            throw new Error ('Se esta tratando de borrar una nota, pero no hay ninguna nota activa.');
+
+        try {
+                const docRef = doc( firebaseDB, `${uid}/journal/notes/${activeNote.id}` );
+                await deleteDoc( docRef );
+                dispatch( deleteNoteById( activeNote.id! ) );
+                dispatch( setActiveNoteFromNote( null ) );
+        } catch (error) {
+            console.log(error);
+            dispatch( logout() );      
+        }
+        finally {
+            dispatch( setIsDeleting( false ) );
+        }
+    };
+}
+
+

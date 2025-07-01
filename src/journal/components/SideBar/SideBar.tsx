@@ -31,7 +31,10 @@ export const SideBar = ({drawerWidth}: {drawerWidth: number}) => {
                 </Toolbar>
                 <Divider/>
                 <List>
-                    { notes.map( note => <SideBarItem key={note.id} note = { note } /> ) }
+                    { notes.slice()
+                           .sort((n1, n2) => n1.title.localeCompare(n2.title))
+                           .map( note => <SideBarItem key={note.id} note = { note } /> )
+                     }
                 </List>
             </Drawer>
 

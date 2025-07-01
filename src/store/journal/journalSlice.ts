@@ -12,14 +12,16 @@ export interface JournalState {
     isSaving: boolean,
     messageSaved: string,
     notes: Note[],
-    activeNote: Note | null
+    activeNote: Note | null,
+    isDeleting: boolean
 }
 
 const initialState: JournalState = {
     isSaving: false,
     activeNote: null,
     messageSaved: '',
-    notes: []
+    notes: [],
+    isDeleting: false,
 
 }
 
@@ -38,7 +40,7 @@ export const journalSlice = createSlice({
         setActiveNote: ( state, action: PayloadAction<string>) => {
             state.activeNote = state.notes.find( n => n.id === action.payload ) || null ;
         },
-        setActiveNoteFromNote: ( state, action: PayloadAction<Note>) => {
+        setActiveNoteFromNote: ( state, action: PayloadAction<Note | null>) => {
             state.activeNote = action.payload ;
         },
         setNotes: ( state, action: PayloadAction<Note[]> ) => {
@@ -53,7 +55,6 @@ export const journalSlice = createSlice({
             newNotes.push( action.payload );
             state.notes = newNotes;
             state.isSaving= false;
-            /// TODO: Mostrar mensaje de Actualización de Nota completada
             state.messageSaved= `La nota "${action.payload.title}" se ha actualizado correctamente.`
         },
         deleteNoteById: (state, action: PayloadAction<string>) => {
@@ -63,8 +64,29 @@ export const journalSlice = createSlice({
             if( state.activeNote )
                 state.activeNote.imageUrls = [...state.activeNote.imageUrls, ...action.payload];
         },
+        clearNotesOnLogout: (state) => {
+            state.notes= initialState.notes;
+            state.activeNote= initialState.activeNote;
+            state.isSaving= initialState.isSaving;
+            state.messageSaved= initialState.messageSaved;
+            state.isDeleting = initialState.isDeleting;
+        },
+        setIsDeleting: ( state, action: PayloadAction<boolean> ) => {
+            state.isDeleting = action.payload;
+        } 
     }
 });
 
 
-export const { addNewEmptyNote, setActiveNote, setActiveNoteFromNote, setNotes, setSaving, updateNote, deleteNoteById, savingNewNote, setPhotosToActiveNote } = journalSlice.actions;
+export const { addNewEmptyNote,
+               setActiveNote,
+               setActiveNoteFromNote,
+               setNotes,
+               setSaving,
+               updateNote,
+               deleteNoteById,
+               savingNewNote,
+               setPhotosToActiveNote,
+               clearNotesOnLogout,
+               setIsDeleting
+            } = journalSlice.actions;

@@ -4,17 +4,18 @@ import { SaveOutlined } from "@mui/icons-material";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { ImageGalery } from "../../components/ImageGalery/ImageGalery";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { useForm } from "../../../shared/hooks";
-import { setActiveNoteFromNote, startSavingNote, startUploadingFiles, type Note } from "../../../store/journal";
+import { setActiveNoteFromNote, startDeletingNote, startSavingNote, startUploadingFiles, type Note } from "../../../store/journal";
 import { VisuallyHiddenInput } from "../../../shared/components/VisuallyHiddenInput";
 
 
 export const NoteView = () => {
 
-    const { activeNote, messageSaved, isSaving } = useAppSelector( state => state.journal );
+    const { activeNote, messageSaved, isSaving, isDeleting } = useAppSelector( state => state.journal );
     const dispatch = useAppDispatch();
 
     const { title, body, date, imageUrls, onInputChange, formState } = useForm( activeNote! );
@@ -47,6 +48,10 @@ export const NoteView = () => {
         dispatch( startUploadingFiles( files ) );
     }
 
+    const onDeleteNote = () => {
+        dispatch( startDeletingNote() );
+    }
+
   return (
         <>
             <Grid   container 
@@ -66,13 +71,22 @@ export const NoteView = () => {
             
             
             <Grid>
+                <Button variant="outlined"
+                        startIcon={<DeleteIcon />}
+                        color="error"
+                        onClick={ onDeleteNote }
+                        disabled= { isSaving || isDeleting }
+                        >
+                  Borrar
+                </Button>
+
                 <Button
                     sx={{ margin:2 }}
                     component="label"
                     role={undefined}
                     variant="contained"
                     startIcon={ <CloudUploadIcon />}
-                    disabled={ isSaving }
+                    disabled={ isSaving || isDeleting }
                         >
                         Subir fotos
                         <VisuallyHiddenInput
@@ -85,7 +99,7 @@ export const NoteView = () => {
                 <Button color="primary"
                         sx={{ padding: 2 }}
                         onClick={ onSaveNote }
-                        disabled={ isSaving }
+                        disabled={ isSaving || isDeleting }
                         >
                     <SaveOutlined sx={{ fontSize: 30 , mr: 1}} />
                     Guardar
@@ -122,8 +136,7 @@ export const NoteView = () => {
                     />
             </Grid>
             
-            {/* Galeria de Imagenes */}
-            <ImageGalery/>
+            <ImageGalery images={ activeNote!.imageUrls } />
 
             </Grid>
         </>
